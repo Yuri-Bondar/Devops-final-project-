@@ -76,86 +76,90 @@ pipeline {
     agent any
 
     triggers {
-        // Checks for changes in GitHub every 5 minutes
+        // Check for GitHub changes every 5 minutes
         pollSCM('H/5 * * * *')
     }
 
     environment {
-        // Path to your project folder inside Tomcat webapps
+        // Path to the project folder inside Tomcat webapps on Azure Linux VM
         TOMCAT_WEBAPP = "/var/lib/tomcat9/webapps/Devops-final-project-/adamliadadiramityuri"
-        // The URL of your application for health monitoring
+        // Internal application URL for health monitoring
         APP_URL = "http://localhost:8081/Devops-final-project-/adamliadadiramityuri/"
     }
 
     stages {
         stage('Initialize') {
             steps {
-                echo "-------------------------------------------------------"
-                echo "STARTING DEPLOYMENT PROCESS"
-                echo "Target Server: Azure Linux VM"
+                echo "✅ STARTING DEPLOYMENT PROCESS"
                 echo "Time: ${sh(script: 'date', returnStdout: true).trim()}"
-                echo "-------------------------------------------------------"
             }
         }
 
         stage('Checkout') {
             steps {
-                echo "Fetching latest code from GitHub..."
-                // Jenkins handles the Git checkout automatically via SCM settings
-                echo "Successfully synchronized with repository."
+                echo "✅ Fetching latest code from GitHub"
+                // SCM checkout is handled automatically by Jenkins
             }
         }
 
         stage('Prepare Directory') {
             steps {
-                echo "Verifying target directory structure..."
-                // Create directory if it doesn't exist (no sudo needed if permissions are set)
+                echo "✅ Verifying target directory structure"
                 sh "mkdir -p ${TOMCAT_WEBAPP}"
-                echo "Directory is ready: ${TOMCAT_WEBAPP}"
             }
         }
 
         stage('Deploy to Tomcat') {
             steps {
-                echo "📦 Deploying index.jsp to Tomcat web server..."
-                // Copy the file and show confirmation in logs
-                sh """
-                    cp adamliadadiramityuri/index.jsp ${TOMCAT_WEBAPP}/index.jsp
-                    ls -l ${TOMCAT_WEBAPP}/index.jsp
-                """
-                echo "✅ File successfully copied to webapps."
+                echo "✅ Deploying index.jsp to Tomcat web server"
+                // Copy the file to the specific folder including the team names
+                sh "cp adamliadadiramityuri/index.jsp ${TOMCAT_WEBAPP}/index.jsp"
             }
         }
-stage('Uptime Robot Monitoring Status') {
-    steps {
-        echo "Checking Application Status from UptimeRobot..."
-        // Uses the credetinals created in jenkins
-        withCredentials([string(credentialsId: 'uptimerobot-api-key', variable: 'UPTIME_KEY')]) {
-            script {
-                def response = sh(
-                    script: "curl -X POST https://api.uptimerobot.com/v2/getMonitors -d 'api_key=${UPTIME_KEY}&format=json' -s",
-                    returnStdout: true
-                )
-                
-                if (response.contains('"status":2')) {
-                    echo "✅ UptimeRobot confirms: Site is UP"
-                } else {
-                    echo "⚠️ UptimeRobot status: Site might be DOWN or Warning"
+
+        stage('Health Check') {
+            steps {
+                echo "✅ Initiating Internal Health Check for: ${APP_URL}"
+                sh """
+                    STATUS=\$(curl -s -o /dev/null -w "%{http_code}" ${APP_URL})
+                    if [ \$STATUS -ge 200 ] && [ \$STATUS -lt 400 ]; then
+                        echo "✅ Internal Status: SUCCESS"
+                    else
+                        echo "❌ Internal Status: FAILED (Status: \$STATUS)"
+                        exit 1
+                    fi
+                """
+            }
+        }
+
+        stage('External Monitoring Status') {
+            steps {
+                echo "✅ Checking UptimeRobot status"
+                // Using the Secret Text credential created in Jenkins
+                withCredentials([string(credentialsId: 'uptimerobot-api-key', variable: 'UPTIME_KEY')]) {
+                    script {
+                        def response = sh(
+                            script: "curl -X POST https://api.uptimerobot.com/v2/getMonitors -d 'api_key=${UPTIME_KEY}&format=json' -s",
+                            returnStdout: true
+                        )
+                        
+                        if (response.contains('"status":2')) {
+                            echo "✅ UptimeRobot confirms: Application is UP"
+                        } else {
+                            echo "⚠️ UptimeRobot status: Application is not reporting as UP"
+                        }
+                    }
                 }
             }
         }
     }
-}
 
     post {
         success {
-            echo "Pipeline finished successfully! Great job team."
+            echo "✅ Pipeline finished successfully"
         }
         failure {
-            echo "❌ Pipeline failed! Review the logs above to identify the issue."
-        }
-        always {
-            echo "Cleaning up workspace..."
+            echo "❌ Pipeline failed - check the logs for syntax or permission errors"
         }
     }
 }
