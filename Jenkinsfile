@@ -111,6 +111,27 @@ pipeline {
                 sh "cp adamliadadiramityuri/index.jsp ${TOMCAT_WEBAPP}/index.jsp"
             }
         }
+         stage('Selenium Tests') {
+            steps {
+                echo "✅ Running Selenium UI tests"
+
+                sh '''
+                    set -e
+                    echo "APP_URL=$APP_URL"
+
+                    # sanity checks
+                    node -v
+                    npm -v
+                    npx -v
+
+                    # verify test exists in repo
+                    test -f selenium/test_page.side
+
+                    # run selenium IDE .side via npx (no global install)
+                    npx --yes selenium-side-runner "selenium/test_page.side" --base-url "$APP_URL"
+                '''
+            }
+        }
 
         stage('External Monitoring Status') {
             steps {
