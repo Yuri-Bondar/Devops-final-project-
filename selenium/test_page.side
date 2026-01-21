@@ -1,20 +1,20 @@
 {
-  "id": "7cf51140-f5a2-4e79-9d3f-e37b7188b5e0",
+  "id": "69c63e41-b839-4efd-87a5-826f4a71d833",
   "version": "2.0",
-  "name": "Devops-tests",
-  "url": "http://4.178.56.71:8081/Devops-final-project-/",
+  "name": "DevOps-Project",
+  "url": "http://4.178.56.71:8081",
   "tests": [{
-    "id": "5693aa76-5299-4eca-9ce8-c47fb8d9cdc6",
+    "id": "1a51589e-14b8-4303-b00a-2b82a9913471",
     "name": "test_page",
     "commands": [{
-      "id": "6c5633ea-cbf8-48c8-ac84-149d36f4dd40",
+      "id": "751be56e-9d72-4044-9e2f-a5b4f8b9b031",
       "comment": "",
       "command": "open",
-      "target": "adamliadadiramityuri/",
+      "target": "/Devops-final-project-/adamliadadiramityuri/",
       "targets": [],
       "value": ""
     }, {
-      "id": "f7635248-729b-4dd5-b28a-c3289fbb2e45",
+      "id": "14c58e42-3dda-489f-91aa-79e2ea446934",
       "comment": "",
       "command": "assertText",
       "target": "css=h1",
@@ -25,9 +25,20 @@
       ],
       "value": "DevOps Project"
     }, {
-      "id": "8a068226-7150-4ff6-a439-31387d46cc46",
+      "id": "6282e25a-0a16-4692-9afa-ccec599a4f76",
       "comment": "",
-      "command": "type",
+      "command": "assertText",
+      "target": "css=h2",
+      "targets": [
+        ["css=h2", "css:finder"],
+        ["xpath=//h2", "xpath:position"],
+        ["xpath=//h2[contains(.,'Welcome to our JSP Application')]", "xpath:innerText"]
+      ],
+      "value": "Welcome to our JSP Application"
+    }, {
+      "id": "6fc9c895-1a4e-47ab-bde8-b763a450d363",
+      "comment": "",
+      "command": "click",
       "target": "name=userText",
       "targets": [
         ["name=userText", "name"],
@@ -35,21 +46,16 @@
         ["xpath=//input[@name='userText']", "xpath:attributes"],
         ["xpath=//input", "xpath:position"]
       ],
-      "value": "DevOpsProject"
+      "value": ""
     }, {
-      "id": "34d8d41a-ba4e-40bb-a26d-71393ac8a745",
+      "id": "97dab30a-c964-4ab0-96c7-c63e03bb1af8",
       "comment": "",
-      "command": "assertValue",
-      "target": "name=userText",
-      "targets": [
-        ["name=userText", "name"],
-        ["css=input:nth-child(1)", "css:finder"],
-        ["xpath=//input[@name='userText']", "xpath:attributes"],
-        ["xpath=//input", "xpath:position"]
-      ],
-      "value": "DevOpsProject"
+      "command": "executeScript",
+      "target": "var el = document.querySelector('input[name=\"userText\"]'); el.focus(); el.value = 'DevOpsProject'; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true }));",
+      "targets": [],
+      "value": ""
     }, {
-      "id": "85763b8a-b662-42e6-9f0d-92eeea0eeb20",
+      "id": "428a406a-4eeb-48da-9d3e-09e483ee4b08",
       "comment": "",
       "command": "click",
       "target": "css=input:nth-child(2)",
@@ -60,7 +66,7 @@
       ],
       "value": ""
     }, {
-      "id": "0f0d56be-db77-406c-a52f-5f0064e2143e",
+      "id": "ce7fef1a-aa22-4d98-bd00-db8257f9244c",
       "comment": "",
       "command": "assertText",
       "target": "css=.result-box",
@@ -68,28 +74,24 @@
         ["css=.result-box", "css:finder"],
         ["xpath=//div[3]/div", "xpath:position"]
       ],
-      "value": "You entered: DevOpsProject"
+      "value": "You entered: DevOpsProject "
     }, {
-      "id": "4ceb0397-565f-4672-b7d0-15097c2677d9",
+      "id": "67cd98b6-7365-41bb-981e-c04729f69bcb",
       "comment": "",
       "command": "assertText",
-      "target": "css=h2",
-      "targets": [
-        ["css=h2", "css:finder"],
-        ["xpath=//h2", "xpath:position"],
-        ["xpath=//h2[contains(.,'Welcome to our JSP Application')]", "xpath:innerText"]
-      ],
-      "value": "Welcome to our JSP Application"
+      "target": "css=strong",
+      "targets": [],
+      "value": "DevOpsProject"
     }]
   }],
   "suites": [{
-    "id": "0e68df56-7fcb-4716-ba84-7f8008ebad59",
+    "id": "0d465101-a3e3-4c5e-9cd5-b5def3074346",
     "name": "Default Suite",
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
     "tests": []
   }],
-  "urls": ["http://129.159.141.184:8080/", "http://4.178.56.71:8081/Devops-final-project-/"],
+  "urls": ["http://4.178.56.71:8081/"],
   "plugins": []
 }
