@@ -101,7 +101,6 @@ pipeline {
         stage('Initialize') {
             steps {
                 echo "✅ STARTING PROCESS"
-                // Log the current system time
                 echo "Current Server Time: ${sh(script: 'date', returnStdout: true).trim()}"
             }
         }
@@ -109,33 +108,22 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo "✅ Fetching latest source code from GitHub"
+                checkout scm
             }
         }
 
         stage('Deploy to Tomcat') {
             steps {
                 echo "✅ Deploying index.jsp to production"
-                // Copying the file to the target web directory
                 sh "cp adamliadadiramityuri/index.jsp ${TOMCAT_WEBAPP}/index.jsp"
             }
         }
-         stage('Selenium Tests') {
+
+        stage('Selenium Tests') {
             steps {
                 echo "✅ Running Selenium UI tests"
-
                 sh '''
                     set -e
-                    echo "APP_URL=$APP_URL"
-
-                    # sanity checks
-                    node -v
-                    npm -v
-                    npx -v
-
-                    # verify test exists in repo
-                    test -f selenium/test_page.side
-
-                    # run selenium IDE .side via npx (no global install)
                     export MOZ_HEADLESS=1
                     npx --yes selenium-side-runner "selenium/test_page.side" --base-url "$APP_URL" --capabilities "browserName=firefox"
                 '''
@@ -145,40 +133,44 @@ pipeline {
         stage('External Monitoring Status') {
             steps {
                 echo "✅ Querying UptimeRobot API for Status"
-                
-                // Using credentials store for the API Key
                 withCredentials([string(credentialsId: 'uptimerobot-api-key', variable: 'UPTIME_KEY')]) {
                     script {
-                        // Securely calling the UptimeRobot API
                         def response = sh(
                             script: 'curl -X POST https://api.uptimerobot.com/v2/getMonitors -d "api_key=${UPTIME_KEY}&format=json" -s',
                             returnStdout: true
                         )
                         
-                        // Validating if the monitor status is ONLINE (status 2)
                         if (response.contains('"status":2')) {
                             echo "✅ MONITOR STATUS: ONLINE"
                         } else {
-                            // Failing the pipeline if the site is unreachable
                             error("❌ MONITOR ALERT: Application is reported as DOWN")
                         }
                     }
                 }
             }
         }
+
         stage('Load Test (Gatling)') {
             steps {
+                echo "✅ Starting Load Test (Gatling)"
                 sh 'mvn gatling:test -Dgatling.simulationClass=Load3Min -Dgatling.jvmArgs="-Xmx128m"'
-    }
-}
+            }
+        }
+
+        stage('Stress Test (Gatling)') {
+            steps {
+                echo "✅ Starting Stress Test (Gatling)"
+                sh 'mvn gatling:test -Dgatling.simulationClass=Stress3Min -Dgatling.jvmArgs="-Xmx128m"'
+            }
+        }
     }
 
     post {
         success {
-            echo "✅ Success"
+            echo "✅ Pipeline completed successfully"
         }
         failure {
-            echo "❌ Failure"
+            echo "❌ Pipeline failed"
         }
     }
 }
