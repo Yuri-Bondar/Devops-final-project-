@@ -173,7 +173,6 @@ pipeline {
             echo "✅ Success"
         }
         failure {
-            // Fixed the syntax by closing the quotes properly
             echo "❌ Failure"
         }
     }
