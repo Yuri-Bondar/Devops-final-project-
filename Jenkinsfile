@@ -166,6 +166,11 @@ pipeline {
                 }
             }
         }
+        stage('Load Test (Gatling)') {
+            steps {
+                sh 'mvn gatling:test -Dgatling.simulationClass=Load3Min -Dgatling.jvmArgs="-Xmx128m"'
+    }
+}
     }
 
     post {
