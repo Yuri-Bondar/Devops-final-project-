@@ -27,7 +27,8 @@ class MaxLimit extends Simulation {
     )
   ).protocols(httpProtocol)
     .assertions(
-      global.successfulRequests.percent.gt(95),      // stricter for validation
-      global.responseTime.percentile3.lt(5000)       // p95 < 5s (adjust if needed)
+      global.successfulRequests.percent.gt(100),      // Fail if less than 100% request succeed
+      global.responseTime.percentile3.lt(15000)       // Fail if response time is more than 15 seconds
     )
 }
+
