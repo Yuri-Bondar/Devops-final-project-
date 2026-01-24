@@ -80,6 +80,7 @@ pipeline {
                         '''
                     }
                 }
+
                 stage('Load Test (Gatling)') {
                     steps {
                         echo "✅ Starting Load Test (Gatling)"
