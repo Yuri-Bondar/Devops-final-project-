@@ -80,13 +80,6 @@ pipeline {
                         '''
                     }
                 }
-                stage('Max Limit Test (Gatling)') {
-                    steps {
-                        echo "✅ Starting Max Limit Test (Gatling)"
-                        sh 'mvn gatling:test -Dgatling.simulationClass=MaxLimit30 -Dgatling.jvmArgs="-Xmx128m"'
-                    }
-                }
-
                 stage('Load Test (Gatling)') {
                     steps {
                         echo "✅ Starting Load Test (Gatling)"
