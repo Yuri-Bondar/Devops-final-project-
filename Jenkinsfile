@@ -17,7 +17,7 @@ pipeline {
     environment {
         // Path to the application folder on the server
         TOMCAT_WEBAPP = "/var/lib/tomcat9/webapps/Devops-final-project-/adamliadadiramityuri"
-        // Public address for the application
+        // Public address for the application!!!
         APP_URL = "http://4.178.56.71:8081/Devops-final-project-/adamliadadiramityuri/"
     }
 
